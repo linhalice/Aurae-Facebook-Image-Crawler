@@ -118,7 +118,8 @@ namespace Aurae_Facebook_Image_Crawler
             }
             catch (Exception ex)
             {
-
+                MessageBox.Show(ex.Message);
+                MessageBox.Show("Đã xảy ra lỗi khi crawl ảnh. Vui lòng kiểm tra lại Token, Cookie, Id. Không thể tải ảnh nếu Token hoặc Cookie không có quyền xem ảnh trong Id.");
             }
 
         }
