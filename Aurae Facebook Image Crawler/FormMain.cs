@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -99,7 +100,7 @@ namespace Aurae_Facebook_Image_Crawler
                     iProg++;
                     this.Invoke(new Action(() =>
                     {
-                        labelProcess.Text = $"{iProg}/{intMax}";
+                        labelProcess.Text = $"{iProg}/{root.feed.data.Count()}";
                         progressBar1.Value = iProg;
                     }));
                     if (item.full_picture != null)
@@ -155,6 +156,134 @@ namespace Aurae_Facebook_Image_Crawler
             textBoxMax.Text = ToolSettings.Default.Max;
         }
 
+        public List<string> AllFile = new List<string>();
+        public int FileIndex = 0;
+        public Image image = null;
 
+        private void button6_Click(object sender, EventArgs e)
+        {
+            Process.Start("explorer.exe", System.IO.Directory.GetCurrentDirectory() + @"\Resize");
+
+            AllFile.Clear();
+            FileIndex = 0;
+            string filepath = "Image";
+            DirectoryInfo d = new DirectoryInfo(filepath);
+
+            foreach (var file in d.GetFiles("*"))
+            {
+                AllFile.Add(file.FullName);
+            }
+
+            try
+            {
+                image = Image.FromFile(AllFile[FileIndex]);
+                labelFilePath.Text = "File: " + FileIndex;
+                pictureBox1.Image = image;
+            }
+            catch { }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            FileIndex++;
+            try
+            {
+                image = Image.FromFile(AllFile[FileIndex]);
+                labelFilePath.Text = "File: "+ FileIndex;
+                pictureBox1.Image = image;
+            }
+            catch { }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            FileIndex--;
+            try
+            {
+                image= Image.FromFile(AllFile[FileIndex]);
+                labelFilePath.Text = "File: " + FileIndex;
+                pictureBox1.Image = image;
+            }
+            catch { }
+        }
+
+        private void FormMain_KeyDown(object sender, KeyEventArgs e)
+        {
+           
+        }
+
+        private void FormMain_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Right:
+                    FileIndex++;
+                    try
+                    {
+                        labelFilePath.Text = "File: " + FileIndex;
+                        pictureBox1.Image = Image.FromFile(AllFile[FileIndex]);
+                    }
+                    catch { }
+                    break;
+                case Keys.Left:
+                    FileIndex--;
+                    try
+                    {
+                        labelFilePath.Text = "File: " + FileIndex;
+                        pictureBox1.Image = Image.FromFile(AllFile[FileIndex]);
+                    }
+                    catch { }
+                    break;
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            pictureBox1.Image = null;
+            image.Dispose();
+            image= null;
+            File.Delete(AllFile[FileIndex]);
+        }
+
+        Image Resize(Image image, int w, int h)
+        {
+            Bitmap bmp = new Bitmap(w, h);
+            Graphics graphic = Graphics.FromImage(bmp);
+            graphic.DrawImage(image, 0, 0, w, h);
+            graphic.Dispose();
+            return bmp;
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string subPath = "Resize"; // Your code goes here
+
+                bool exists = System.IO.Directory.Exists((subPath));
+
+                if (!exists)
+                    System.IO.Directory.CreateDirectory((subPath));
+
+                Image img = Image.FromFile(AllFile[FileIndex]);
+                img = Resize(img, 600, 600);
+
+        
+                string savePath = AllFile[FileIndex].Replace("Image", "Resize");
+                img.Save($@"Resize\{RandomString(20)}.jpg");
+            }
+            catch
+            {
+
+            }
+        }
+
+        public static Random random = new Random();
+        public static string RandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
     }
 }
