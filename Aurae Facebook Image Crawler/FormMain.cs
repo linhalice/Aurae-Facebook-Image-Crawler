@@ -118,15 +118,56 @@ namespace Aurae_Facebook_Image_Crawler
                             byte[] imageByte = httpRequest.Get(pictureUrl).ToBytes();
                             Image image = ByteArrayToImage(imageByte);
                             Image image2 = ByteArrayToImage(imageByte);
-
-                            int randomNumber = random.Next(stickers.Count());
-                            string stickerPathRandom = stickers[randomNumber];
-                            Image imageSticker = Image.FromFile(stickerPathRandom);
-
-                            image2.Save($@"Image\{pictureName}.jpg");
+                            Size size = new Size(image2.Width, image2.Height);
+                            image2 = (Image)(new Bitmap(image2, size));
+                            image2.Save($@"C:\Users\ADMIN\source\repos\Aurae-Facebook-Image-Crawler\Aurae Facebook Image Crawler\bin\Debug\Image\{pictureName}.jpg");
                             Graphics graphics = Graphics.FromImage(image);
-                            graphics.DrawImage(imageSticker, 300, 300);
 
+                            for (int i = 0; i < 10; i++)
+                            {
+                                int randomNumber = random.Next(stickers.Count());
+                                string stickerPathRandom = stickers[randomNumber];
+                                Image imageSticker = Image.FromFile(stickerPathRandom);
+                                imageSticker = (Image)(new Bitmap(imageSticker, 15, 15));
+                                graphics.DrawImage(imageSticker, 0, (image2.Height/10)*i);
+                            }
+
+                            for (int i = 0; i < 10; i++)
+                            {
+                                int randomNumber = random.Next(stickers.Count());
+                                string stickerPathRandom = stickers[randomNumber];
+                                Image imageSticker = Image.FromFile(stickerPathRandom);
+                                imageSticker = (Image)(new Bitmap(imageSticker, 15, 15));
+                                graphics.DrawImage(imageSticker, image.Width - 15, (image2.Height / 10) * i);
+                            }
+
+                            for (int i = 0; i < 10; i++)
+                            {
+                                int randomNumber = random.Next(stickers.Count());
+                                string stickerPathRandom = stickers[randomNumber];
+                                Image imageSticker = Image.FromFile(stickerPathRandom);
+                                imageSticker = (Image)(new Bitmap(imageSticker, 15, 15));
+                                graphics.DrawImage(imageSticker, (image2.Width / 10) * i, 0);
+                            }
+
+                            for (int i = 0; i < 10; i++)
+                            {
+                                int randomNumber = random.Next(stickers.Count());
+                                string stickerPathRandom = stickers[randomNumber];
+                                Image imageSticker = Image.FromFile(stickerPathRandom);
+                                imageSticker = (Image)(new Bitmap(imageSticker, 15, 15));
+                                graphics.DrawImage(imageSticker, (image2.Width / 10) * i, image2.Height - 15);
+                            }
+                            {
+                                int randomNumber = random.Next(stickers.Count());
+                                string stickerPathRandom = stickers[randomNumber];
+                                Image imageSticker = Image.FromFile(stickerPathRandom);
+                                imageSticker = (Image)(new Bitmap(imageSticker, 60, 60));
+                                graphics.DrawImage(imageSticker, 0, 0);
+                                graphics.DrawImage(imageSticker, 0, image2.Height - 60);
+                                graphics.DrawImage(imageSticker, image2.Width -60, 0);
+                                graphics.DrawImage(imageSticker, image2.Width - 60, image2.Height - 60);
+                            }
                             image.Save($@"Edited\{pictureName}.jpg");
 
                             Thread.Sleep(intDelay);
