@@ -82,5 +82,17 @@ namespace Aurae_Facebook_Image_Crawler {
                 this["Loop"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string StickerPath {
+            get {
+                return ((string)(this["StickerPath"]));
+            }
+            set {
+                this["StickerPath"] = value;
+            }
+        }
     }
 }

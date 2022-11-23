@@ -51,6 +51,7 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label6 = new System.Windows.Forms.Label();
             this.textBoxLoop = new System.Windows.Forms.TextBox();
+            this.textBoxStickerPath = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -171,7 +172,7 @@
             // pictureBox1
             // 
             this.pictureBox1.Location = new System.Drawing.Point(100, 36);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(333, 325);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -248,9 +249,9 @@
             this.groupBox1.Controls.Add(this.button4);
             this.groupBox1.Controls.Add(this.pictureBox1);
             this.groupBox1.Location = new System.Drawing.Point(15, 174);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox1.Size = new System.Drawing.Size(532, 430);
             this.groupBox1.TabIndex = 20;
             this.groupBox1.TabStop = false;
@@ -274,12 +275,21 @@
             this.textBoxLoop.Text = "50";
             this.textBoxLoop.TextChanged += new System.EventHandler(this.textBoxLoop_TextChanged);
             // 
+            // textBoxStickerPath
+            // 
+            this.textBoxStickerPath.Location = new System.Drawing.Point(131, 146);
+            this.textBoxStickerPath.Name = "textBoxStickerPath";
+            this.textBoxStickerPath.Size = new System.Drawing.Size(146, 20);
+            this.textBoxStickerPath.TabIndex = 23;
+            this.textBoxStickerPath.TextChanged += new System.EventHandler(this.textBoxStickerPath_TextChanged);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(564, 611);
+            this.Controls.Add(this.textBoxStickerPath);
             this.Controls.Add(this.textBoxLoop);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.groupBox1);
@@ -336,6 +346,7 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox textBoxLoop;
+        private System.Windows.Forms.TextBox textBoxStickerPath;
     }
 }
 

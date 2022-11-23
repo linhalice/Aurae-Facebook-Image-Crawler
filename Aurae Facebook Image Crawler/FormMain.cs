@@ -9,6 +9,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -112,7 +113,22 @@ namespace Aurae_Facebook_Image_Crawler
                         {
                             string pictureUrl = item.full_picture;
                             string pictureName = item.id.ToString();
-                            httpRequest.Get(pictureUrl).ToFile($@"Image\{pictureName}.jpg");
+                            //httpRequest.Get(pictureUrl).ToFile($@"Image\{pictureName}.jpg");
+
+                            byte[] imageByte = httpRequest.Get(pictureUrl).ToBytes();
+                            Image image = ByteArrayToImage(imageByte);
+                            Image image2 = ByteArrayToImage(imageByte);
+
+                            int randomNumber = random.Next(stickers.Count());
+                            string stickerPathRandom = stickers[randomNumber];
+                            Image imageSticker = Image.FromFile(stickerPathRandom);
+
+                            image2.Save($@"Image\{pictureName}.jpg");
+                            Graphics graphics = Graphics.FromImage(image);
+                            graphics.DrawImage(imageSticker, 300, 300);
+
+                            image.Save($@"Edited\{pictureName}.jpg");
+
                             Thread.Sleep(intDelay);
                         }
                         catch
@@ -140,8 +156,22 @@ namespace Aurae_Facebook_Image_Crawler
                             {
                                 string pictureUrl = itemNext.full_picture;
                                 string pictureName = itemNext.id.ToString();
-                                httpRequest.Get(pictureUrl).ToFile($@"Image\{pictureName}.jpg");
-                                Thread.Sleep(intDelay);
+                                //httpRequest.Get(pictureUrl).ToFile($@"Image\{pictureName}.jpg");
+
+                                byte[] imageByte = httpRequest.Get(pictureUrl).ToBytes();
+                                Image image = ByteArrayToImage(imageByte);
+                                Image image2 = ByteArrayToImage(imageByte);
+
+                                int randomNumber = random.Next(stickers.Count());
+                                string stickerPathRandom = stickers[randomNumber];
+                                Image imageSticker = Image.FromFile(stickerPathRandom);
+
+                                image2.Save($@"Image\{pictureName}.jpg");
+                                Graphics graphics = Graphics.FromImage(image);
+                                graphics.DrawImage(imageSticker, 300, 300);
+
+                                image.Save($@"Edited\{pictureName}.jpg");
+
                             }
                             catch
                             { }
@@ -182,6 +212,7 @@ namespace Aurae_Facebook_Image_Crawler
             ToolSettings.Default.Max = textBoxMax.Text;
             ToolSettings.Default.Save();
         }
+        List<string> stickers = new List<string>();
         private void FormMain_Load(object sender, EventArgs e)
         {
             textBoxToken.Text = ToolSettings.Default.Token;
@@ -189,6 +220,19 @@ namespace Aurae_Facebook_Image_Crawler
             textBoxId.Text = ToolSettings.Default.Id;
             textBoxMax.Text = ToolSettings.Default.Max;
             textBoxLoop.Text = ToolSettings.Default.Loop;
+            textBoxStickerPath.Text = ToolSettings.Default.StickerPath;
+
+
+            try
+            {
+                string[] files = Directory.GetFiles(ToolSettings.Default.StickerPath);
+                stickers.AddRange(files);
+            }
+            catch (Exception ex)
+            {
+
+            }
+
         }
 
         public List<string> AllFile = new List<string>();
@@ -246,6 +290,16 @@ namespace Aurae_Facebook_Image_Crawler
         {
 
         }
+
+        private Image ByteArrayToImage(byte[] bytesArr)
+        {
+            using (MemoryStream memstr = new MemoryStream(bytesArr))
+            {
+                Image img = Image.FromStream(memstr);
+                return img;
+            }
+        }
+
 
         private void FormMain_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
@@ -324,6 +378,12 @@ namespace Aurae_Facebook_Image_Crawler
         private void textBoxLoop_TextChanged(object sender, EventArgs e)
         {
             ToolSettings.Default.Loop = textBoxLoop.Text;
+            ToolSettings.Default.Save();
+        }
+
+        private void textBoxStickerPath_TextChanged(object sender, EventArgs e)
+        {
+            ToolSettings.Default.StickerPath = textBoxStickerPath.Text;
             ToolSettings.Default.Save();
         }
     }
