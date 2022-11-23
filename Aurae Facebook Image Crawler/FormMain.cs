@@ -31,22 +31,25 @@ namespace Aurae_Facebook_Image_Crawler
             string cookie = textBoxCookie.Text;
             string max = textBoxMax.Text;
             string delay = textBoxDelay.Text;
+            string loop = textBoxLoop.Text;
             Thread thread = new Thread(() =>
             {
-                ImageDownload(token, cookie, id, max, delay);
+                ImageDownload(token, cookie, id, max, delay, loop);
             });
             thread.IsBackground = true;
             thread.Start();
         }
 
-        private void ImageDownload(string token, string cookie, string id, string max, string delay)
+        private void ImageDownload(string token, string cookie, string id, string max, string delay, string loop)
         {
             int intMax = 100;
             int intDelay = 500;
+            int intLoop = 100;
             try
             {
                 intMax = Int32.Parse(max);
                 intDelay = Int32.Parse(delay);
+                intLoop = Int32.Parse(loop);
             }
             catch { }
 
@@ -64,7 +67,7 @@ namespace Aurae_Facebook_Image_Crawler
             if (!exists)
                 System.IO.Directory.CreateDirectory((subPath));
 
-            Process.Start("explorer.exe", System.IO.Directory.GetCurrentDirectory()+ @"\Image");
+            Process.Start("explorer.exe", System.IO.Directory.GetCurrentDirectory() + @"\Image");
 
             string postUrl = $"https://graph.facebook.com/v14.0/{id}?fields=feed.limit({max})%7Bfull_picture%7D&access_token={token}";
 
@@ -116,6 +119,37 @@ namespace Aurae_Facebook_Image_Crawler
                         { }
                     }
                 }
+
+                postUrl = root.feed.paging.next;
+
+
+                for (int i = 0; i < intLoop; i++)
+                {
+                    string jsonDataNext = httpRequest.Get(postUrl).ToString();
+                    DataNextModel.Root rootNext = JsonConvert.DeserializeObject<DataNextModel.Root>(jsonDataNext);
+                    foreach (var itemNext in rootNext.data)
+                    {
+                        iProg++;
+                        this.Invoke(new Action(() =>
+                        {
+                            labelProcess.Text = $"{iProg}/{root.feed.data.Count() + rootNext.data.Count()}";
+                        }));
+                        if (itemNext.full_picture != null)
+                        {
+                            try
+                            {
+                                string pictureUrl = itemNext.full_picture;
+                                string pictureName = itemNext.id.ToString();
+                                httpRequest.Get(pictureUrl).ToFile($@"Image\{pictureName}.jpg");
+                                Thread.Sleep(intDelay);
+                            }
+                            catch
+                            { }
+                        }
+                    }
+                    postUrl = rootNext.paging.next;
+                }
+
             }
             catch (Exception ex)
             {
@@ -154,6 +188,7 @@ namespace Aurae_Facebook_Image_Crawler
             textBoxCookie.Text = ToolSettings.Default.Cookie;
             textBoxId.Text = ToolSettings.Default.Id;
             textBoxMax.Text = ToolSettings.Default.Max;
+            textBoxLoop.Text = ToolSettings.Default.Loop;
         }
 
         public List<string> AllFile = new List<string>();
@@ -189,7 +224,7 @@ namespace Aurae_Facebook_Image_Crawler
             try
             {
                 image = Image.FromFile(AllFile[FileIndex]);
-                labelFilePath.Text = "File: "+ FileIndex;
+                labelFilePath.Text = "File: " + FileIndex;
                 pictureBox1.Image = image;
             }
             catch { }
@@ -200,7 +235,7 @@ namespace Aurae_Facebook_Image_Crawler
             FileIndex--;
             try
             {
-                image= Image.FromFile(AllFile[FileIndex]);
+                image = Image.FromFile(AllFile[FileIndex]);
                 labelFilePath.Text = "File: " + FileIndex;
                 pictureBox1.Image = image;
             }
@@ -209,7 +244,7 @@ namespace Aurae_Facebook_Image_Crawler
 
         private void FormMain_KeyDown(object sender, KeyEventArgs e)
         {
-           
+
         }
 
         private void FormMain_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -241,7 +276,7 @@ namespace Aurae_Facebook_Image_Crawler
         {
             pictureBox1.Image = null;
             image.Dispose();
-            image= null;
+            image = null;
             File.Delete(AllFile[FileIndex]);
         }
 
@@ -268,7 +303,7 @@ namespace Aurae_Facebook_Image_Crawler
                 Image img = Image.FromFile(AllFile[FileIndex]);
                 img = Resize(img, 600, 600);
 
-        
+
                 string savePath = AllFile[FileIndex].Replace("Image", "Resize");
                 img.Save($@"Resize\{RandomString(20)}.jpg");
             }
@@ -284,6 +319,12 @@ namespace Aurae_Facebook_Image_Crawler
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             return new string(Enumerable.Repeat(chars, length)
                 .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
+        private void textBoxLoop_TextChanged(object sender, EventArgs e)
+        {
+            ToolSettings.Default.Loop = textBoxLoop.Text;
+            ToolSettings.Default.Save();
         }
     }
 }

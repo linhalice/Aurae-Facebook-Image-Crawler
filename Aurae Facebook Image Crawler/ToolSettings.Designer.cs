@@ -12,7 +12,7 @@ namespace Aurae_Facebook_Image_Crawler {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.0.3.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.4.0.0")]
     internal sealed partial class ToolSettings : global::System.Configuration.ApplicationSettingsBase {
         
         private static ToolSettings defaultInstance = ((ToolSettings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new ToolSettings())));
@@ -68,6 +68,18 @@ namespace Aurae_Facebook_Image_Crawler {
             }
             set {
                 this["Max"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Loop {
+            get {
+                return ((string)(this["Loop"]));
+            }
+            set {
+                this["Loop"] = value;
             }
         }
     }
