@@ -61,12 +61,30 @@ namespace Aurae_Facebook_Image_Crawler
             }));
             int iProg = 0;
 
-            string subPath = "Image"; // Your code goes here
+            {
+                string subPath = "Image"; // Your code goes here
 
-            bool exists = System.IO.Directory.Exists((subPath));
+                bool exists = System.IO.Directory.Exists((subPath));
 
-            if (!exists)
-                System.IO.Directory.CreateDirectory((subPath));
+                if (!exists)
+                    System.IO.Directory.CreateDirectory((subPath));
+            }
+            {
+                string subPath = "Edited"; // Your code goes here
+
+                bool exists = System.IO.Directory.Exists((subPath));
+
+                if (!exists)
+                    System.IO.Directory.CreateDirectory((subPath));
+            }
+            {
+                string subPath = "Resize"; // Your code goes here
+
+                bool exists = System.IO.Directory.Exists((subPath));
+
+                if (!exists)
+                    System.IO.Directory.CreateDirectory((subPath));
+            }
 
             Process.Start("explorer.exe", System.IO.Directory.GetCurrentDirectory() + @"\Image");
 
@@ -102,11 +120,11 @@ namespace Aurae_Facebook_Image_Crawler
                 foreach (var item in root.feed.data)
                 {
                     iProg++;
-                    this.Invoke(new Action(() =>
-                    {
-                        labelProcess.Text = $"{iProg}/{root.feed.data.Count()}";
-                        progressBar1.Value = iProg;
-                    }));
+                    //this.Invoke(new Action(() =>
+                    //{
+                    //    labelProcess.Text = $"{iProg}/{root.feed.data.Count()}";
+                    //    progressBar1.Value = iProg;
+                    //}));
                     if (item.full_picture != null)
                     {
                         try
@@ -120,7 +138,7 @@ namespace Aurae_Facebook_Image_Crawler
                             Image image2 = ByteArrayToImage(imageByte);
                             Size size = new Size(image2.Width, image2.Height);
                             image2 = (Image)(new Bitmap(image2, size));
-                            image2.Save($@"C:\Users\ADMIN\source\repos\Aurae-Facebook-Image-Crawler\Aurae Facebook Image Crawler\bin\Debug\Image\{pictureName}.jpg");
+                            image2.Save(Application.StartupPath+$@"\Image\{pictureName}.jpg");
                             Graphics graphics = Graphics.FromImage(image);
 
                             for (int i = 0; i < 10; i++)
@@ -169,7 +187,8 @@ namespace Aurae_Facebook_Image_Crawler
                                 graphics.DrawImage(imageSticker, image2.Width - 60, image2.Height - 60);
                             }
                             image.Save($@"Edited\{pictureName}.jpg");
-
+                            image = (Image)(new Bitmap(image, 600, 600));
+                            image.Save($@"Resize\{pictureName}.jpg");
                             Thread.Sleep(intDelay);
                         }
                         catch
@@ -180,45 +199,96 @@ namespace Aurae_Facebook_Image_Crawler
                 postUrl = root.feed.paging.next;
 
 
-                for (int i = 0; i < intLoop; i++)
+                try
                 {
-                    string jsonDataNext = httpRequest.Get(postUrl).ToString();
-                    DataNextModel.Root rootNext = JsonConvert.DeserializeObject<DataNextModel.Root>(jsonDataNext);
-                    foreach (var itemNext in rootNext.data)
+                    for (int iloop = 0; iloop < intLoop; iloop++)
                     {
-                        iProg++;
-                        this.Invoke(new Action(() =>
+                        string jsonDataNext = httpRequest.Get(postUrl).ToString();
+                        DataNextModel.Root rootNext = JsonConvert.DeserializeObject<DataNextModel.Root>(jsonDataNext);
+                        foreach (var itemNext in rootNext.data)
                         {
-                            labelProcess.Text = $"{iProg}/{root.feed.data.Count() + rootNext.data.Count()}";
-                        }));
-                        if (itemNext.full_picture != null)
-                        {
-                            try
+                            iProg++;
+                            this.Invoke(new Action(() =>
                             {
-                                string pictureUrl = itemNext.full_picture;
-                                string pictureName = itemNext.id.ToString();
-                                //httpRequest.Get(pictureUrl).ToFile($@"Image\{pictureName}.jpg");
+                                labelProcess.Text = $"{iProg}/{root.feed.data.Count() + rootNext.data.Count()}";
+                            }));
+                            if (itemNext.full_picture != null)
+                            {
+                                try
+                                {
+                                    string pictureUrl = itemNext.full_picture;
+                                    string pictureName = itemNext.id.ToString();
+                                    //httpRequest.Get(pictureUrl).ToFile($@"Image\{pictureName}.jpg");
 
-                                byte[] imageByte = httpRequest.Get(pictureUrl).ToBytes();
-                                Image image = ByteArrayToImage(imageByte);
-                                Image image2 = ByteArrayToImage(imageByte);
+                                    byte[] imageByte = httpRequest.Get(pictureUrl).ToBytes();
+                                    Image image = ByteArrayToImage(imageByte);
+                                    Image image2 = ByteArrayToImage(imageByte);
+                                    Size size = new Size(image2.Width, image2.Height);
+                                    image2 = (Image)(new Bitmap(image2, size));
+                                    image2.Save(Application.StartupPath + $@"\Image\{pictureName}.jpg");
+                                    Graphics graphics = Graphics.FromImage(image);
 
-                                int randomNumber = random.Next(stickers.Count());
-                                string stickerPathRandom = stickers[randomNumber];
-                                Image imageSticker = Image.FromFile(stickerPathRandom);
+                                    for (int i = 0; i < 10; i++)
+                                    {
+                                        int randomNumber = random.Next(stickers.Count());
+                                        string stickerPathRandom = stickers[randomNumber];
+                                        Image imageSticker = Image.FromFile(stickerPathRandom);
+                                        imageSticker = (Image)(new Bitmap(imageSticker, 15, 15));
+                                        graphics.DrawImage(imageSticker, 0, (image2.Height / 10) * i);
+                                    }
 
-                                image2.Save($@"Image\{pictureName}.jpg");
-                                Graphics graphics = Graphics.FromImage(image);
-                                graphics.DrawImage(imageSticker, 300, 300);
+                                    for (int i = 0; i < 10; i++)
+                                    {
+                                        int randomNumber = random.Next(stickers.Count());
+                                        string stickerPathRandom = stickers[randomNumber];
+                                        Image imageSticker = Image.FromFile(stickerPathRandom);
+                                        imageSticker = (Image)(new Bitmap(imageSticker, 15, 15));
+                                        graphics.DrawImage(imageSticker, image.Width - 15, (image2.Height / 10) * i);
+                                    }
 
-                                image.Save($@"Edited\{pictureName}.jpg");
+                                    for (int i = 0; i < 10; i++)
+                                    {
+                                        int randomNumber = random.Next(stickers.Count());
+                                        string stickerPathRandom = stickers[randomNumber];
+                                        Image imageSticker = Image.FromFile(stickerPathRandom);
+                                        imageSticker = (Image)(new Bitmap(imageSticker, 15, 15));
+                                        graphics.DrawImage(imageSticker, (image2.Width / 10) * i, 0);
+                                    }
 
+                                    for (int i = 0; i < 10; i++)
+                                    {
+                                        int randomNumber = random.Next(stickers.Count());
+                                        string stickerPathRandom = stickers[randomNumber];
+                                        Image imageSticker = Image.FromFile(stickerPathRandom);
+                                        imageSticker = (Image)(new Bitmap(imageSticker, 15, 15));
+                                        graphics.DrawImage(imageSticker, (image2.Width / 10) * i, image2.Height - 15);
+                                    }
+                                    {
+                                        int randomNumber = random.Next(stickers.Count());
+                                        string stickerPathRandom = stickers[randomNumber];
+                                        Image imageSticker = Image.FromFile(stickerPathRandom);
+                                        imageSticker = (Image)(new Bitmap(imageSticker, 60, 60));
+                                        graphics.DrawImage(imageSticker, 0, 0);
+                                        graphics.DrawImage(imageSticker, 0, image2.Height - 60);
+                                        graphics.DrawImage(imageSticker, image2.Width - 60, 0);
+                                        graphics.DrawImage(imageSticker, image2.Width - 60, image2.Height - 60);
+                                    }
+                                    image.Save($@"Edited\{pictureName}.jpg");
+                                    image = (Image)(new Bitmap(image, 600, 600));
+                                    image.Save($@"Resize\{pictureName}.jpg");
+                                    Thread.Sleep(intDelay);
+
+                                }
+                                catch
+                                { }
                             }
-                            catch
-                            { }
                         }
+                        postUrl = rootNext.paging.next;
                     }
-                    postUrl = rootNext.paging.next;
+                }
+                catch
+                {
+
                 }
 
             }
